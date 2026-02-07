@@ -18,8 +18,8 @@
 // console.log();
 
 var i = 0
-for (var i=0; i<3; i++) setTimeout(()=>console.log(i))
-for (let i=0; i<3; i++) setTimeout(()=>console.log(i))
+// for (var i=0; i<3; i++) setTimeout(()=>console.log(i))
+// for (let i=0; i<3; i++) setTimeout(()=>console.log(i))
 // for (var i=0; i<3; i++) console.log(i)
 
 //词法作用域 lexical scope
@@ -34,3 +34,5 @@ function lexicalFn2(){
   lexicalFn()
 }
 lexicalFn2()
+
+//词法作用域：词法作用域就是指作用域是由代码中函数声明的位置来决定的
