@@ -11,7 +11,7 @@
 // //   return a + b;
 // // }
 
-// // export default let a = 1;
+// // export default let a = 1;//不可以接变量声明
 
 // export default { a, add };
 
