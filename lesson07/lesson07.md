@@ -37,22 +37,43 @@
 
    此外，`ES模块`是静态的，需要构建工具转换后才能在不支持`ES模块`的环境中运行，而`CommonJS模块`可以直接在`Node.js`等环境中运行。
 
+   ~~~js
+   // 动态导入模块
+   import('./module').then(module => {
+     module.greet();
+   });
+   ~~~
+
    
 
-2. [commonjs](https://zhida.zhihu.com/search?content_id=163661770&content_type=Article&match_order=3&q=commonjs&zd_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ6aGlkYV9zZXJ2ZXIiLCJleHAiOjE3NzE3MjQ0MzQsInEiOiJjb21tb25qcyIsInpoaWRhX3NvdXJjZSI6ImVudGl0eSIsImNvbnRlbnRfaWQiOjE2MzY2MTc3MCwiY29udGVudF90eXBlIjoiQXJ0aWNsZSIsIm1hdGNoX29yZGVyIjozLCJ6ZF90b2tlbiI6bnVsbH0.4KCYRnnqrbuDxXdf-Xs6a51fHkmBjydj7GeX0TS2_rU&zhida_source=entity)是运行时加载模块，ES6是在静态编译期间就确定模块的依赖。
+   它们有两个重大差异：
 
-3. ES6在编译期间会将所有import提升到顶部，commonjs不会提升require。
+   **① CommonJS 模块输出的是一个值的拷贝，ES6 模块输出的是值的引用**。
 
-4. commonjs导出的是一个值拷贝，会对加载结果进行缓存，一旦内部再修改这个值，则不会同步到外部。ES6是导出的一个引用，内部修改可以同步到外部。
+   **② CommonJS 模块是运行时加载，ES6 模块是编译时输出接口**。
+
+   第二个差异是因为 CommonJS 加载的是一个对象（即module.exports属性），该对象只有在脚本运行完才会生成。而 ES6 模块不是对象，它的对外接口只是一种静态定义，在代码静态解析阶段就会生成。
+
+   下面重点解释第一个差异，我们还是举上面那个CommonJS模块的加载机制例子:
+
+   ```
+   // lib.js
+   export let counter = 3;
+   export function incCounter() {
+     counter++;
+   }
+   // main.js
+   import { counter, incCounter } from './lib';
+   console.log(counter); // 3
+   incCounter();
+   console.log(counter); // 4
+   ```
+
+   
+
+   ES6 模块的运行机制与 CommonJS 不一样。**ES6 模块是动态引用，并且不会缓存值，模块里面的变量绑定其所在的模块**。
 
 5. commonjs中顶层的this指向这个模块本身，而ES6中顶层this指向undefined。
-
-```javascript
-// 动态导入模块
-import('./module').then(module => {
-  module.greet();
-});
-```
 
 ### 总结：
 
