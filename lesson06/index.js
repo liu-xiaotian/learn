@@ -12,7 +12,6 @@ const addFn = (a) => (b) => (c) => a + b + c;
 
 function add(a) {
   console.log(a);
-
   return function (b) {
     return function (c) {
       return a + b + c;

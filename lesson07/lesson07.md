@@ -1,84 +1,151 @@
-## 什么是 .cjs 和 .mjs ？
-
-1. .cjs 代表使用 CommonJS 模块
-2. .mjs 代表使用 ES 模块
-
 ### commonjs 与 ES6module 的区别：
 
-1. 两者的模块导入导出语法不同：commonjs是`module.exports` ，`exports` 导出， `require()`导入；ES6则是 `export` 和 `export default`导出， `import` 导入。
+1. 语法：
 
-   commonjs //导出多个值用对象module.exports={}，对象可以直接解构const { b, add } = require("./nodeEnvCMJ1.cjs");// 单个值接到等号后，多个值用对象
+   commonjs是`module.exports` ，`exports` 导出， `require()`导入；
 
-   Modules //命名导出， 不可以接 表达式 。//默认导出：不可以接变量声明（let const var），导出多个值要用对象 ，果导出的是对象，这里不可以直接解构
+   ES6则是 `export` ， `export default`导出， `import`  导入。
 
-   ~~~js
-   // 命名导出
-   export const name = 'John';
-   export function greet() {
-     console.log('Hello, ' + name);
-   }
-   import { name, greet } from './module';
-   
-   // 默认导出
-   export default function() {
-     console.log('This is the default export');
-   }
-   import defaultFunction from './module';//如果导出的是对象，这里不可以直接解构
-   
-   //定义模块,统一暴露
-   let name = '张三';
-   
-   function way() {
-       console.log('我可以用这种方式');
-   }
-   
-   export { name, way }
-   ~~~
+2. 注意点：
 
-   此外，`ES模块`是静态的，需要构建工具转换后才能在不支持`ES模块`的环境中运行，而`CommonJS模块`可以直接在`Node.js`等环境中运行。
+   - cjs 导出单个值：module.exports.x = 1，多个值用对象 `module.exports={}` ，解构：const { b, add } = require("./nodeEnvCMJ1.cjs");
+   - mjs 默认导出的对象不可以直接解构，不可以导出变量声明（let const var），命名导出不可以接表达式，例子： export {123} export ()=>{}
 
-   ~~~js
-   // 动态导入模块
-   import('./module').then(module => {
-     module.greet();
-   });
-   ~~~
+3. 静态导入和动态导入
 
-   
+   - cjs
 
-   它们有两个重大差异：
+     ~~~js
+     let config;
+     if (true) {
+       //require() 是同步执行的，且可以写在判断语句（如 if...else）中 ，根据条件动态决定加载 CMJ2 还是 CMJ3
+       config = require("./nodeEnvCMJ2.cjs");
+     } else {
+       config = require("./nodeEnvCMJ3.cjs");
+     }
+     ~~~
 
-   **① CommonJS 模块输出的是一个值的拷贝，ES6 模块输出的是值的引用**。
+   - msj
 
-   **② CommonJS 模块是运行时加载，ES6 模块是编译时输出接口**。
+     普通的 `import...from` 必须位于文件顶层，无法在逻辑判断中使用
 
-   第二个差异是因为 CommonJS 加载的是一个对象（即module.exports属性），该对象只有在脚本运行完才会生成。而 ES6 模块不是对象，它的对外接口只是一种静态定义，在代码静态解析阶段就会生成。
+     ~~~js
+     let config;
+     let path = 1 === 1 ? "./nodeEnvESM2.mjs" : "./nodeEnvESM3.mjs";
+     //路径是一个变量。静态导入无法处理变量路径，只有动态导入才能根据逻辑加载不同的文件。
+     try {
+       const module = await import(path);//使用 import() 函数，返回一个 Promise
+       config = module.default;
+     } catch (err) {
+       console.log(err);
+     }
+     // 方法二 动态导入模块
+     import('./module').then(module => {
+       module.greet();
+     });
+     ~~~
 
-   下面重点解释第一个差异，我们还是举上面那个CommonJS模块的加载机制例子:
+4. 变量绑定机制（live-bindings）：值拷贝 vs. 引用传递
 
-   ```
-   // lib.js
-   export let counter = 3;
-   export function incCounter() {
-     counter++;
-   }
-   // main.js
-   import { counter, incCounter } from './lib';
-   console.log(counter); // 3
-   incCounter();
-   console.log(counter); // 4
-   ```
+   - cjs 输出的是一个值的拷贝，是导出那一刻的一个**副本** 
 
-   
+   - ES6 模块是动态引用，并且不会缓存值，`import` 导入的是原模块变量的一个**只读引用**
 
-   ES6 模块的运行机制与 CommonJS 不一样。**ES6 模块是动态引用，并且不会缓存值，模块里面的变量绑定其所在的模块**。
+   - 例子：
 
-5. commonjs中顶层的this指向这个模块本身，而ES6中顶层this指向undefined。
+        ```js
+        // lib.cjs
+        export let counter = 3;
+        export function incCounter() {
+          counter++;
+        }
+        // main.cjs
+        import { counter, incCounter } from './lib';
+        console.log(counter); // 3
+        incCounter();
+        console.log(counter); // 4
+        ```
 
-### 总结：
+     
 
-- **ES6模块** 更适合于现代JavaScript开发，具有静态分析、支持异步加载、模块化和更清晰的语法。
-- **CommonJS模块** 主要用于Node.js环境，特点是同步加载、动态模块解析，适用于服务器端开发，但不太适合浏览器环境，除非通过打包工具进行转换。
+5. 解决CJS 的快照问题
+
+   - 函数或利用 JS 的 `getter` 属性
+
+     ~~~js
+     // lib.cjs
+     let counter = 3;
+     
+     function incCounter() {
+       counter++;
+     }
+     
+     module.exports = {
+       // 定义一个 getter 属性
+       get counter() {
+         return counter;
+       },
+       incCounter,
+     };
+     
+     // --- main.cjs ---
+     const lib = require('./lib.cjs');
+     
+     // 注意：这里必须通过 lib.counter 访问，不能解构
+     console.log(lib.counter); // 3
+     lib.incCounter();
+     console.log(lib.counter); // 4 (成功获取更新)
+     ~~~
+
+     解构赋值 `const { a } = ...` 相当于 `const a = lib.a`。这一瞬间，它触发了 `getter` 并把当时的数字 `0` 赋值给了新变量 `a`。之后新变量 `a` 就和原始模块脱离关系了。
+
+     函数写法
+     ~~~js
+     // lib.cjs
+     // 定义一个普通的返回函数
+     function getCounter() {
+       return counter;
+     }
+     module.exports = {
+       getCounter, // 导出函数
+       incCounter,
+     };
+     // --- main.cjs ---
+     const { getCounter, incCounter } = require('./lib.cjs');
+     
+     console.log(getCounter()); // 3 (调用函数取值)
+     incCounter();
+     console.log(getCounter()); // 4 (成功获取最新闭包变量)
+     ~~~
+
+   - 将变量包装在对象中
+
+     ~~~js
+     // lib.cjs
+     const state = {
+       counter: 3
+     };
+     
+     function incCounter() {
+       state.counter++; // 直接修改对象内部属性
+     }
+     
+     module.exports = {
+       state,      // 导出整个对象
+       incCounter,
+     };
+     
+     // --- main.cjs ---
+     const lib = require('./lib.cjs');
+     
+     console.log(lib.state.counter); // 3
+     lib.incCounter();
+     console.log(lib.state.counter); // 4 (成功获取更新)
+     ~~~
+
+     
+
+
 
 
 
