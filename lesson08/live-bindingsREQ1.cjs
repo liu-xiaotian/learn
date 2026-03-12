@@ -9,10 +9,10 @@ function counterFun() {
 function getCounter() {
   return counter;
 }
-module.exports = {
-  getCounter,
-  counterFun,
-};
+// module.exports = {
+//   getCounter,
+//   counterFun,
+// };
 
 // 包装成对象
 
@@ -24,3 +24,5 @@ module.exports = {
 // }
 
 // module.exports = { store, incCounter };
+
+console.log(this === module.exports);
