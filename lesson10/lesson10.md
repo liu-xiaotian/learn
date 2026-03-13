@@ -7,4 +7,3 @@
 3. DHCP server
 4. LAN IP 、 WAN IP
 5. 动态IP
-6.
