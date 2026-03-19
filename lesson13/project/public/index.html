@@ -51,7 +51,7 @@
   <body>
     <div class="container">
       <h2>用户登录</h2>
-      <form action="/login" method="POST">
+      <form id="loginForm" action="/login" method="post">
         <input name="username" type="text" placeholder="用户名" required />
         <input
           name="password"
@@ -63,5 +63,29 @@
         <button type="submit">提交</button>
       </form>
     </div>
+    <script>
+      const form = document.getElementById("loginForm");
+      // console.log(form);
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        // console.log(e);
+        const fd = new FormData(form); //FormData的api
+        const payload = Object.fromEntries(fd.entries()); //entries 的作用
+        console.log(payload);
+        const res = fetch("/login", {
+          method: "post",
+          // headers: {
+          //   "Content-Type": "application/x-www-form-urlencoded",
+          //   // "Content-Type": "application/json",
+          // },
+          body: payload,
+          // body: JSON.stringify(payload),
+        });
+        console.log(res);
+      });
+      // 1. 方法
+      // 2. 路径
+      // 3. 数据以什么样的方式传输 Content-Type
+    </script>
   </body>
 </html>
