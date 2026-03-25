@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="count">0</div>
+    <button id="btn">加</button>
+    <script>
+      // 命令式
+      const countElement = document.getElementById("count");
+      const btnElement = document.getElementById("btn");
+      let count = 0;
+      btnElement.addEventListener("click", function () {
+        count++;
+        countElement.textContent = count;
+      });
+    </script>
+  </body>
+</html>
