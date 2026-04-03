@@ -1,15 +1,21 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png" />
-  <HelloWorld msg="Hello Vue 3.0 + Vite" />
+  <div id="app">
+    <h1>根组件</h1>
+    <todoList></todoList>
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
+import todoList from "./components/todoList.vue";
 export default {
-  name: 'App',
+  name: "App",
   components: {
-    HelloWorld
-  }
-}
+    todoList,
+  },
+  setup() {
+    return {};
+  },
+};
 </script>
+
+<style lang="scss" scoped></style>
