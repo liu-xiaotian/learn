@@ -2,11 +2,13 @@
   <div id="app">
     <h1>根组件</h1>
     <todoList :todolist="todoList"></todoList>
+    <todoButton></todoButton>
   </div>
 </template>
 
 <script>
 import todoList from "./components/todoList.vue";
+import todoButton from "./components/todoButton.vue";
 export default {
   name: "App",
   data() {
@@ -20,6 +22,7 @@ export default {
   },
   components: {
     todoList,
+    todoButton,
   },
   setup() {
     return {};
