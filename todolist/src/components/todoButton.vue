@@ -36,8 +36,10 @@ export default {
   methods: {
     changeActive(index) {
       this.active = index;
+      this.$emit("changeActive", index);
     },
   },
+  emits: ["changeActive"],
 };
 </script>
 
