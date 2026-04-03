@@ -1,6 +1,7 @@
 <template>
   <div id="app">
-    <h1>根组件</h1>
+    <h1>todo</h1>
+    <todoInput @addTask="addTask"></todoInput>
     <todoList :todolist="todoList"></todoList>
     <todoButton @change-active="changeActive"></todoButton>
   </div>
@@ -9,6 +10,7 @@
 <script>
 import todoList from "./components/todoList.vue";
 import todoButton from "./components/todoButton.vue";
+import todoInput from "./components/todoInput.vue";
 export default {
   name: "App",
   data() {
@@ -37,10 +39,18 @@ export default {
       this.active = active;
       console.log(this.active);
     },
+    addTask(taskname) {
+      this.todoList.push({
+        id: this.todoList.length + 1,
+        task: taskname,
+        isCompleted: false,
+      });
+    },
   },
   components: {
     todoList,
     todoButton,
+    todoInput,
   },
   setup() {
     return {};
