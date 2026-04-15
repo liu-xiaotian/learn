@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>防抖</title>
+  </head>
+  <body>
+    <button id="btn">防抖按钮</button>
+    <script>
+      // 防抖：触发的事件延迟 n 秒后执行，如果在 n 秒内又触发了事件，则重新计时。
+      // 简单点说就是通过防抖函数让某个触发事件在 n 秒内只会被执行一次。
+      //用途：搜索，输入联想，window触发 resize时间，窗口大小改变
+      // 利用闭包保存一个“可被反复清除的定时器”，确保函数只在最后一次触发后执行。
+      function debounce(func, delay) {
+        let timer;
+        return function (...args) {
+          clearTimeout(timer); // 如果定时器对象存在，则清除重新计时
+          timer = setTimeout(() => {
+            func.apply(this, args);
+            console.log(this); //this默认指向add的dom元素
+          }, delay);
+        };
+      }
+
+      const btn = document.getElementById("btn");
+      btn.addEventListener(
+        "click",
+        debounce(() => {
+          console.log("按钮被点击了！");
+        }, 1000),
+      );
+    </script>
+  </body>
+</html>

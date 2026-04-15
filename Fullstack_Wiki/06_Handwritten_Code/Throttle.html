@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>节流</title>
+  </head>
+  <body>
+    <button id="btn">节流按钮</button>
+    <script>
+      //触发的事件立即执行，然后在 n 秒内再次触发事件时，函数不会被执行。
+      //表单提交，按钮点击，滚动下拉加载，窗口滚动事件
+      function throttle(func, delay) {
+        let lastTime = 0; //记录上次执行的时间
+        return function (...args) {
+          const now = Date.now(); //当前时间
+          if (now - lastTime >= delay) {
+            func.apply(this, args); //执行函数
+            lastTime = now; //更新上次执行的时间
+          }
+        };
+      }
+
+      const btn = document.getElementById("btn");
+      btn.addEventListener(
+        "click",
+        throttle(() => {
+          console.log("按钮被点击了！");
+        }, 1000),
+      );
+    </script>
+  </body>
+</html>
