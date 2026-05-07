@@ -2,7 +2,7 @@ main();
 
 function main() {
   // console.log("hello world");
-  
+
   console.log(user);
   var user = { name: "xiaoyao" };
 
